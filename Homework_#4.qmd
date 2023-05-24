@@ -16,7 +16,38 @@ here::set_here("/Users/graycenmahon/Downloads/ENVS 193DS/ENVS-193DS_homework-04_
 H0: Fish length does not predict fish weight in trout perch, there is no correlation between the two. 
 HA: Fish length and fish weight are positively correlated, as fish length increases, so does its length and vice versa. 
 
-```{r}
-data <- read_csv("north_temperate_lakes.csv")
+```{r read-in-the-data-file}
+data <- read.csv("north_temperate_lakes.csv")
+```
+
+```{r filtering-the-data}
+troutperch_data <- data %>% 
+# using the mutate and filter functions, adjust the column title and then filter the large dataset to view only the trout perch fish. Mutating the column name is optional, I preferred it to be this way, however. 
+  mutate(spname = case_when(spname == "TROUTPERCH" ~ "trout_perch")) %>% 
+  filter(spname == "trout_perch")
+```
+
+```{r missing-data-visualization}
+# using the gg missing data function, call on the new data to make a visualization showing the missing data points.
+gg_miss_var(troutperch_data)
+# here we can see that there are just under 200 missing values for the trout perch weight category. This is relevant to my hypothesis because I am looking at the data in order to determine whether or not fish length has an effect on fish weight for trout perch, and with most of the weight measurements for this specific fish it will make my conclusion less reliable. 
+```
+
+```{r running-a-statistical-test}
+troutperch_ttest <- t.test()
+```
+
+
+```{r summarizing-data}
+troutperch_summary <- troutperch_data %>% 
+  summarize(mean_l = mean(length, na.rm = TRUE),
+            mean_w = mean(weight, na.rm = TRUE),
+            sd_l = sd(length, na.rm = TRUE),
+            sd_w = sd(weight, na.rm = TRUE),
+            var_l = var(length, na.rm = TRUE),
+            var_w = var(weight, na.rm = TRUE),
+            count = length(length))
+# this code chunk is summarizing my data by mean, standard deviation, variance, and count for both the length and weight of the trout perch fish in all sample years. 
+troutperch_summary
 ```
 
