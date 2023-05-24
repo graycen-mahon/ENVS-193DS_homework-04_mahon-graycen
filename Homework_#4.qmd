@@ -1,0 +1,22 @@
+---
+title: "Homework #4"
+author: "Graycen Mahon"
+format: pdf
+editor: visual
+---
+
+# Homework #4
+
+```{r}
+here::set_here("/Users/graycenmahon/Downloads/ENVS 193DS/ENVS-193DS_homework-04_mahon-graycen")
+```
+
+1) How does fish length predict fish weight for trout perch? (across all sample years)
+
+H0: Fish length does not predict fish weight in trout perch, there is no correlation between the two. 
+HA: Fish length and fish weight are positively correlated, as fish length increases, so does its length and vice versa. 
+
+```{r}
+data <- read_csv("north_temperate_lakes.csv")
+```
+
