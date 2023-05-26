@@ -8,30 +8,19 @@ editor: visual
 # Homework #4
 
 ```{r}
+# set your file path using the here function to organize the files needed
 here::set_here("/Users/graycenmahon/Downloads/ENVS 193DS/ENVS-193DS_homework-04_mahon-graycen")
 ```
 
 1) How does fish length predict fish weight for trout perch? (across all sample years)
 
-H0: Fish length does not predict fish weight in trout perch, there is no correlation between the two. 
-HA: Fish length and fish weight are positively correlated, as fish length increases, so does its length and vice versa. 
+H0: There is no linear relationship between fish length and fish weight, B = 0 (B -> slope). Fish length does not predict fish weight in trout perch, there is no correlation between the two. 
+HA: There is a linear relationship between fish length and fish weight, B =/ 0. Fish length and fish weight are positively correlated, as fish length increases, so does its length and vice versa. 
 
 ```{r read-in-the-data-file}
+# using the read.csv function read in the data set that will be used in the code
 data <- read.csv("north_temperate_lakes.csv")
 ```
-
-```{r summarizing-the-whole-data-frame}
-total_data_summary <- data %>% 
-  summarize(mean_l = mean(length, na.rm = TRUE),
-            mean_w = mean(weight, na.rm = TRUE),
-            sd_l = sd(length, na.rm = TRUE),
-            sd_w = mean(weight, na.rm = TRUE),
-            var_l = var(length, na.rm = TRUE),
-            var_w = mean(weight, na.rm = TRUE),
-            count = length(length))
-total_data_summary
-```
-
 
 ```{r filtering-the-data-for-troutperch}
 troutperch_data <- data %>% 
@@ -41,27 +30,13 @@ troutperch_data <- data %>%
 ```
 
 ```{r missing-data-visualization}
-# using the gg missing data function, call on the new data to make a visualization showing the missing data points.
-gg_miss_var(troutperch_data)
+# using the gg missing data function, call on the new data to make a visualization showing the missing data points. Using element_text and labs elements, create a descriptive caption for the graph.
+gg_miss_var(troutperch_data) + (element_text = labs(caption = "Visualizing the Missing Data from the North Temperate Lakes dataset"))
 # here we can see that there are just under 200 missing values for the trout perch weight category. This is relevant to my hypothesis because I am looking at the data in order to determine whether or not fish length has an effect on fish weight for trout perch, and with most of the weight measurements for this specific fish it will make my conclusion less reliable. 
 ```
 
-```{r summarizing-data-frame}
-data_summary <- data %>% 
-  group_by(spname) %>% 
-  summarize(mean_l = mean(length, na.rm = TRUE),
-            mean_w = mean(weight, na.rm = TRUE),
-            sd_l = sd(length, na.rm = TRUE),
-            sd_w = mean(weight, na.rm = TRUE),
-            var_l = var(length, na.rm = TRUE),
-            var_w = mean(weight, na.rm = TRUE),
-            count = length(length))
-# this code chunk is summarizing my data by mean, standard deviation, variance, and count for both the length and weight of the trout perch fish in all sample years. 
-
-data_summary
-```
-
 ```{r running-a-linear-test-and-plotting-model-object}
+# create a new object called model object and using the lm fucntion (linear model) gather the data and then use the plot function to plot all 4 graphs
 modelobject <- lm(weight ~ length, data = troutperch_data)
 plot(modelobject)
 ```
@@ -82,12 +57,45 @@ In the third plot (Scale-location), testing for the ratio of variance, we can se
 Lastly, the final plot (Residuals vs Leverage) is a plot that shows which, and how many, points in a data set are considered influential. If any point in this plot falls outside of Cook’s distance (the black dashed lines in the upper right hand corner) then it is considered to be an influential observation and if removed from the dataset, the coefficients would change drastically. This specifc plot shows that there are very few influential points in the dataset, with only 1 points falling outside the dashed lines. 
 
 ```{r summary-modelobject}
-summary(modelobject)
+# using the summary function, summarize the modelobject depicted above
+modelobject <- summary(modelobject)
 ```
 
 ```{r ANOVA-table-of-modelobject}
-anova(modelobject)
-summary.aov(modelobject)
+# then use the anova function to make an anova table and summarize the data for the anova table!
+anova_data <- anova(modelobject)
+summary_anova_data <- summary.aov(modelobject)
 
+# making the anova table with the as data frame function. I names both rows and columns and strung the data points as factors. In order to keep the P value from being in standard notation I ran the function "options(scipen = 999) " in my console. 
+anova_table <- as.data.frame(anova_data, row.names = c("Length", "Residuals"), stringsAsFactors = TRUE)
+colnames(anova_table) <- c("Degrees of Freedom", "Sum of Squares (SS)", "Mean of Squares (MS)", "F-Ratio", "P_Value")
 ```
+
+# 8) Describing ANOVA Results in accordance with the Summary() Results 
+ANOVA is a form of linear regression, theoretically showing a linear relationship between all predictor (length) and response (weight) variables. The modelobject shows that the data is normally distributed, and with the Quartiles in the summary we can ssee that it is true; although slightly skewed left. Q1 and Q3 should be the same magnitude, but the Q1 is slightly more negative indicating a left skew.The F-ratio in the ANOVA table is the ratio is very high, and with a high t-value and low P-value in the modelobject summary, they reinforce the idea that there is a significant relationship between the variables. 
+
+# 9) According to the test run above, the model object, and the ANOVA table I can conclude that there is a significant relationsuip between the two variables: length and weight. A extremely low P-value (0.00000...2) and a high F-ratio support the idea that there is a relationship between fish length and their subsequent weight. Although the data is left skewed, it is still considered to have a normal distribution. The null hypothesis is rejected, as B is not equal to 0 (B = slope). This is proved by the linear regression model, where the first plot (residuals vs fitted) showed that the data had a postive linear relationship (denoting a positive slope!).  
+
+# 10) Create a Data Visualization with Model Predictions Confidence Intervals
+
+```{r}
+troutperch_data %>% 
+  ggplot(aes(x = length, y = weight)) +
+  geom_smooth()
+```
+
+
+```{r data-visualization}
+# calling in ggplot to make a graph!! Using the theme function I named and altered the appearance of the graph title(s), axis titles, color, and border color. In order to add the confidence levels I .... 
+ggplot(data = troutperch_data, aes(x = length, y = weight)) + geom_smooth(color = "hotpink", method = lm, linewidth = 1) + geom_jitter(color = "lightblue") + theme_minimal() +
+theme(axis.text = element_text(colour = "black", size=10), 
+        axis.title = element_text(size=12, face = "bold"), 
+        plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5), 
+  plot.subtitle = element_text(color = "gray", size = 9, face = "bold", hjust = 0.5), 
+  panel.border = element_rect(color = "lightpink", fill = NA, linewidth = 3), 
+  legend.text = element_text(color = "black", size = 7, face = "bold"),
+  legend.position = c(0.85, 0.86)) +
+  labs(x = "LENGTH (Millimeters)", y = "WEIGHT (Grams)", title = "Trout Perch Weight in Comparison to Length", subtitle = "Observing the Trout Perch Population in The North Temperate Lakes", caption = "The influence of fish weights on fish length with the linear regression model predictions and confidence intervals")
+```
+
 
