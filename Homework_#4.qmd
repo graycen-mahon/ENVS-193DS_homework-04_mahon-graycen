@@ -8,8 +8,16 @@ editor: visual
 # Homework #4
 
 ```{r}
-# set your file path using the here function to organize the files needed
+# set your file path using the here function to organize the files needed and load in packages
 here::set_here("/Users/graycenmahon/Downloads/ENVS 193DS/ENVS-193DS_homework-04_mahon-graycen")
+
+library(here)
+library(tidyverse)
+library(naniar)
+library(magrittr)
+library(janitor)
+library(dplyr)
+library(ggplot2)
 ```
 
 1) How does fish length predict fish weight for trout perch? (across all sample years)
@@ -57,8 +65,8 @@ In the third plot (Scale-location), testing for the ratio of variance, we can se
 Lastly, the final plot (Residuals vs Leverage) is a plot that shows which, and how many, points in a data set are considered influential. If any point in this plot falls outside of Cook’s distance (the black dashed lines in the upper right hand corner) then it is considered to be an influential observation and if removed from the dataset, the coefficients would change drastically. This specifc plot shows that there are very few influential points in the dataset, with only 1 points falling outside the dashed lines. 
 
 ```{r summary-modelobject}
-# using the summary function, summarize the modelobject depicted above
-modelobject <- summary(modelobject)
+# using the summary function, summarize the model object depicted above
+summary_modelobject <- summary(modelobject)
 ```
 
 ```{r ANOVA-table-of-modelobject}
@@ -77,13 +85,6 @@ ANOVA is a form of linear regression, theoretically showing a linear relationshi
 # 9) According to the test run above, the model object, and the ANOVA table I can conclude that there is a significant relationsuip between the two variables: length and weight. A extremely low P-value (0.00000...2) and a high F-ratio support the idea that there is a relationship between fish length and their subsequent weight. Although the data is left skewed, it is still considered to have a normal distribution. The null hypothesis is rejected, as B is not equal to 0 (B = slope). This is proved by the linear regression model, where the first plot (residuals vs fitted) showed that the data had a postive linear relationship (denoting a positive slope!).  
 
 # 10) Create a Data Visualization with Model Predictions Confidence Intervals
-
-```{r}
-troutperch_data %>% 
-  ggplot(aes(x = length, y = weight)) +
-  geom_smooth()
-```
-
 
 ```{r data-visualization}
 # calling in ggplot to make a graph!! Using the theme function I named and altered the appearance of the graph title(s), axis titles, color, and border color. In order to add the confidence levels I .... 
